@@ -8,27 +8,6 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <style>
-      /* Melhorando o ajuste dos botões */
-      .btn {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      /* Evitando overflow horizontal em telas pequenas */
-      .container {
-        overflow-x: auto;
-      }
-      /* Ajuste para tornar a interface mais limpa em dispositivos móveis */
-      input,
-      button {
-        width: 100%;
-        box-sizing: border-box;
-      }
-      /* Ajuste do espaçamento */
-      .list-group-item {
-        margin-bottom: 10px;
-      }
-    </style>
   </head>
   <body>
     <div class="container mt-5" style="margin-bottom: 50px">
@@ -36,7 +15,7 @@
         Sistema de Jogadores
       </h1>
       <div class="row">
-        <div class="col-12 col-md-6">
+        <div class="col-md-6">
           <h2>Cadastrar Jogador</h2>
           <input
             type="text"
@@ -44,11 +23,11 @@
             class="form-control"
             placeholder="Nome do Jogador"
           />
-          <button onclick="addPlayer()" class="btn btn-primary mt-2">
+          <button onclick="addPlayer()" class="btn btn-primary mt-2 mb-5">
             Adicionar Jogador
           </button>
         </div>
-        <div class="col-12 col-md-6">
+        <div class="col-md-6">
           <h2>Lista de Jogadores</h2>
           <ul id="playerList" class="list-group">
             <!-- Jogadores serão adicionados aqui -->
@@ -58,9 +37,8 @@
           </button>
         </div>
       </div>
-
       <div class="row mt-4">
-        <div class="col-12 col-md-4">
+        <div class="col-md-4">
           <h2>Time A</h2>
           <ul id="teamA" class="list-group">
             <!-- Jogadores do Time A serão exibidos aqui -->
@@ -69,7 +47,7 @@
             Time A Perdeu
           </button>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-md-4">
           <h2>Time B</h2>
           <ul id="teamB" class="list-group">
             <!-- Jogadores do Time B serão exibidos aqui -->
@@ -78,26 +56,28 @@
             Time B Perdeu
           </button>
         </div>
-        <div class="col-12 col-md-4 mt-4">
+        <div class="col-md-4">
           <h2>Lista de Espera</h2>
           <div id="waitingList" class="list-group">
             <!-- Times de espera serão exibidos aqui -->
           </div>
         </div>
       </div>
-
       <div class="row mt-4">
-        <div class="col-12">
+        <div class="col-md-12">
           <h2>Configurações</h2>
-          <button onclick="mergeTeams()" class="btn btn-info mt-2">
-            Sortear A x B
-          </button>
 
+          <div class="col-md-4 mb-4">
+            <button onclick="mergeTeams()" class="btn btn-info mt-2">
+              Sortear A x B
+            </button>
+          </div>
           <label for="playersPerTeam">Jogadores por Time:</label>
           <input
             type="number"
             id="playersPerTeam"
             class="form-control"
+            value="5"
             min="1"
           />
           <button onclick="updateTeams()" class="btn btn-success mt-2">
@@ -106,7 +86,6 @@
         </div>
       </div>
     </div>
-
     <script src="script.js"></script>
   </body>
 </html>

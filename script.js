@@ -72,7 +72,7 @@ function renderPlayerList() {
     actionButtonsDiv.className = "d-flex gap-2"; // Mantém os botões alinhados à direita
 
     const moveButton = document.createElement("button");
-    moveButton.textContent = "Mover para Espera";
+    moveButton.textContent = "Final da fila";
     moveButton.className = "btn btn-secondary btn-sm";
     moveButton.onclick = () => moveToWaitingList(index);
 
