@@ -265,6 +265,7 @@ function substitutePlayer(teamId, playerIndex) {
   const teamAPlayers = selectedPlayers.slice(0, teamSize);
   const teamBPlayers = selectedPlayers.slice(teamSize, teamSize * 2);
   const waitingPlayers = selectedPlayers.slice(teamSize * 2);
+  const disabledPlayers = players.filter((player) => !player.checked);
 
   let teamPlayers = teamId === "teamA" ? teamAPlayers : teamBPlayers;
   const playerToSubstitute = teamPlayers[playerIndex];
@@ -280,12 +281,24 @@ function substitutePlayer(teamId, playerIndex) {
     waitingPlayers.push(playerToSubstitute);
 
     // Atualiza a lista de jogadores
-    const updatedPlayers =
+    let updatedPlayers =
       teamId === "teamA"
         ? [...teamPlayers, ...teamBPlayers, ...waitingPlayers]
         : [...teamAPlayers, ...teamPlayers, ...waitingPlayers];
 
-    players = updatedPlayers.map((name) => ({ name, checked: true }));
+    updatedPlayers = updatedPlayers.map((name) => ({ name, checked: true }));
+
+    let list = [];
+    // Agora, se houver jogadores em disabledPlayers, adicione-os à lista final
+    if (disabledPlayers.length > 0) {
+      list = [
+        ...updatedPlayers,
+        ...disabledPlayers // Adiciona disabledPlayers, se houver
+      ];
+    }
+
+    players = list.length > 0 ? list : updatedPlayers;
+
     localStorage.setItem("players", JSON.stringify(players));
     renderLists();
   } else {
