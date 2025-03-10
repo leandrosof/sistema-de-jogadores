@@ -47,7 +47,7 @@ function addPlayer() {
       alert("Jogador já cadastrado!");
       return;
     }
-    saveState(); // Salva o estado antes de adicionar
+    // saveState(); // Salva o estado antes de adicionar
     players.push({ name: playerName, checked: true });
     localStorage.setItem("players", JSON.stringify(players));
     document.getElementById("playerName").value = "";
@@ -69,7 +69,7 @@ function movePlayer(index, direction) {
     (direction === -1 && index > 0) ||
     (direction === 1 && index < players.length - 1)
   ) {
-    saveState(); // Salva o estado antes de mover
+    // saveState(); // Salva o estado antes de mover
     const temp = players[index];
     players[index] = players[index + direction];
     players[index + direction] = temp;
@@ -80,7 +80,7 @@ function movePlayer(index, direction) {
 
 // Função para alternar a seleção do jogador
 function togglePlayerSelection(index) {
-  saveState(); // Salva o estado antes de alternar
+  // saveState(); // Salva o estado antes de alternar
   players[index].checked = !players[index].checked;
   localStorage.setItem("players", JSON.stringify(players));
   renderLists();
@@ -89,9 +89,9 @@ function togglePlayerSelection(index) {
 // Função para renderizar a lista de jogadores
 function renderPlayerList() {
   const playerList = document.getElementById("playerList");
-  const removeAllButton = document.querySelector(
-    "button[onclick='clearAllPlayers()']"
-  );
+  // const removeAllButton = document.querySelector(
+  //   "button[onclick='clearAllPlayers()']"
+  // );
 
   playerList.innerHTML = "";
   players.forEach((player, index) => {
@@ -161,9 +161,9 @@ function renderPlayerList() {
     playerList.appendChild(li);
   });
 
-  if (removeAllButton) {
-    removeAllButton.style.display = showButtons ? "block" : "none";
-  }
+  // if (removeAllButton) {
+  //   removeAllButton.style.display = showButtons ? "block" : "none";
+  // }
 }
 
 // Função para renderizar os times e a lista de espera
@@ -229,7 +229,7 @@ function moveToWaitingList(index) {
 
 // Função para remover um jogador
 function removePlayer(index) {
-  saveState(); // Salva o estado antes de remover
+  // saveState(); // Salva o estado antes de remover
   players.splice(index, 1);
   localStorage.setItem("players", JSON.stringify(players));
   renderLists();
@@ -238,12 +238,52 @@ function removePlayer(index) {
 // Função para indicar que um time perdeu
 function teamLost(teamId) {
   saveState(); // Salva o estado antes de marcar o time perdedor
-  const team = document.getElementById(teamId);
-  const teamPlayers = Array.from(team.children).map((li) => li.textContent);
-  players = players
-    .filter((player) => !teamPlayers.includes(player.name))
-    .concat(teamPlayers.map((name) => ({ name, checked: true })));
+
+  // Recupera a lista de jogadores do localStorage (já como objetos com 'name' e 'checked')
+  const allPlayers = JSON.parse(localStorage.getItem("players"));
+
+  // Divide a lista de jogadores em times A e B e reserva
+  const teamAPlayers = allPlayers.slice(0, playersPerTeam); // Jogadores do time A
+  const teamBPlayers = allPlayers.slice(playersPerTeam, playersPerTeam * 2); // Jogadores do time B
+  const reservePlayers = allPlayers.slice(playersPerTeam * 2); // Jogadores da reserva
+
+  // Definir variáveis para armazenar os jogadores que perderam
+  let losingPlayers, updatedReservePlayers;
+
+  // Verifica qual time perdeu e organiza a troca corretamente
+  if (teamId === "teamA") {
+    losingPlayers = teamAPlayers;
+    updatedReservePlayers = reservePlayers.slice(losingPlayers.length); // Atualiza a reserva
+  } else if (teamId === "teamB") {
+    losingPlayers = teamBPlayers;
+    updatedReservePlayers = reservePlayers.slice(losingPlayers.length); // Atualiza a reserva
+  }
+
+  // Substitui o time perdido pelos jogadores da reserva e move os jogadores perdedores para o final
+  let updatedPlayers = [];
+
+  if (teamId === "teamA") {
+    updatedPlayers = [
+      ...reservePlayers.slice(0, playersPerTeam), // Substitui os jogadores do time A com os da reserva
+      ...teamBPlayers, // Mantém o time B inalterado
+      ...updatedReservePlayers, // Coloca o restante da reserva
+      ...losingPlayers // Coloca os perdedores no final
+    ];
+  } else if (teamId === "teamB") {
+    updatedPlayers = [
+      ...teamAPlayers, // Mantém o time A inalterado
+      ...reservePlayers.slice(0, playersPerTeam), // Substitui os jogadores do time B com os da reserva
+      ...updatedReservePlayers, // Coloca o restante da reserva
+      ...losingPlayers // Coloca os perdedores no final
+    ];
+  }
+
+  players = updatedPlayers;
+  // Salva a lista atualizada no localStorage
   localStorage.setItem("players", JSON.stringify(players));
+  console.log(updatedPlayers); // Para verificar a lista de jogadores
+
+  // Chama renderLists e faz a verificação
   renderLists();
 }
 
@@ -273,7 +313,7 @@ function updateTeams() {
     document.getElementById("playersPerTeam").value
   );
   if (newPlayersPerTeam > 0) {
-    saveState(); // Salva o estado antes de atualizar
+    // saveState(); // Salva o estado antes de atualizar
     playersPerTeam = newPlayersPerTeam;
     localStorage.setItem("playersPerTeam", playersPerTeam);
     renderLists();
@@ -282,9 +322,69 @@ function updateTeams() {
   }
 }
 
+// Função para exportar a lista de jogadores
+function exportPlayers() {
+  if (players.length > 0) {
+    const dataStr = JSON.stringify(players, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "jogadores.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } else {
+    alert("Nenhum jogador para exportar.");
+  }
+}
+
+// Função para importar a lista de jogadores
+function importPlayers() {
+  document.getElementById("importFileInput").click();
+}
+
+// Função para lidar com a importação de arquivo
+function handleFileImport(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const importedPlayers = JSON.parse(e.target.result);
+        if (Array.isArray(importedPlayers)) {
+          // saveState(); // Salva o estado antes de importar
+          players = importedPlayers;
+          localStorage.setItem("players", JSON.stringify(players));
+          renderLists();
+          updateExportButtonVisibility();
+          alert("Jogadores importados com sucesso!");
+        } else {
+          alert("O arquivo não contém uma lista válida de jogadores.");
+        }
+      } catch (error) {
+        alert("Erro ao importar jogadores. Verifique o arquivo.");
+      }
+    };
+    reader.readAsText(file);
+  }
+}
+
+// Função para atualizar a visibilidade do botão de exportar
+function updateExportButtonVisibility() {
+  const exportButton = document.getElementById("exportButton");
+  if (exportButton) {
+    exportButton.style.display = players.length > 0 ? "inline-block" : "none";
+  }
+}
+
+// Atualize a visibilidade do botão de exportar ao carregar a página e após alterações na lista
+document.addEventListener("DOMContentLoaded", updateExportButtonVisibility);
+
 // Função para remover todos os jogadores
 function clearAllPlayers() {
-  saveState(); // Salva o estado antes de remover todos
+  // saveState(); // Salva o estado antes de remover todos
   players = [];
   localStorage.removeItem("players");
   renderLists();

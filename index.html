@@ -146,9 +146,6 @@
                   </button>
                 </div>
                 <ul id="playerList" class="list-group"></ul>
-                <button onclick="clearAllPlayers()" class="btn btn-danger mt-2">
-                  Remover Todos
-                </button>
               </div>
             </div>
           </div>
@@ -221,8 +218,41 @@
                   value="5"
                   min="1"
                 />
-                <button onclick="updateTeams()" class="btn btn-success">
+                <button onclick="updateTeams()" class="btn btn-success mb-3">
                   Atualizar Times
+                </button>
+
+                <!-- Botões de Importar e Exportar -->
+                <h2>Importar / Exportar Jogadores</h2>
+                <div class="d-flex gap-2 mb-3">
+                  <button onclick="importPlayers()" class="btn btn-primary">
+                    Importar Jogadores
+                  </button>
+                  <button
+                    onclick="exportPlayers()"
+                    class="btn btn-secondary"
+                    id="exportButton"
+                    style="display: none"
+                  >
+                    Exportar Jogadores
+                  </button>
+                </div>
+
+                <!-- Input de arquivo oculto para importação -->
+                <input
+                  type="file"
+                  id="importFileInput"
+                  style="display: none"
+                  onchange="handleFileImport(event)"
+                />
+
+                <h2>Limpar lista de Jogadores</h2>
+                <button
+                  id="removeAllButton"
+                  onclick="clearAllPlayers()"
+                  class="btn btn-danger mt-2"
+                >
+                  Remover Todos
                 </button>
               </div>
             </div>
