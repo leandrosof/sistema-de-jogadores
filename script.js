@@ -342,54 +342,43 @@ function removePlayer(index) {
 function teamLost(teamId) {
   saveState(); // Salva o estado antes de marcar o time perdedor
 
-  // Recupera a lista de jogadores do localStorage (já como objetos com 'name' e 'checked')
-  const allPlayers = JSON.parse(localStorage.getItem("players"));
+  // Recupera a lista de jogadores do localStorage
+  const allPlayers = JSON.parse(localStorage.getItem("players")) || [];
 
-  // Divide a lista de jogadores em times A e B e reserva
+  // Divide a lista de jogadores em times A, B e reserva
   const teamAPlayers = allPlayers.slice(0, playersPerTeam); // Jogadores do time A
   const teamBPlayers = allPlayers.slice(playersPerTeam, playersPerTeam * 2); // Jogadores do time B
   const reservePlayers = allPlayers.slice(playersPerTeam * 2); // Jogadores da reserva
 
-  // Definir variáveis para armazenar os jogadores que perderam
-  let losingPlayers, updatedReservePlayers;
-
-  // Verifica qual time perdeu e organiza a troca corretamente
-  if (teamId === "teamA") {
-    losingPlayers = teamAPlayers;
-    updatedReservePlayers = reservePlayers.slice(losingPlayers.length); // Atualiza a reserva
-  } else if (teamId === "teamB") {
-    losingPlayers = teamBPlayers;
-    updatedReservePlayers = reservePlayers.slice(losingPlayers.length); // Atualiza a reserva
-  }
-
-  // Substitui o time perdido pelos jogadores da reserva e move os jogadores perdedores para o final
   let updatedPlayers = [];
 
   if (teamId === "teamA") {
+    // Time A perdeu: substitui os jogadores do time A pelos da reserva
     updatedPlayers = [
-      ...reservePlayers.slice(0, playersPerTeam), // Substitui os jogadores do time A com os da reserva
-      ...teamBPlayers, // Mantém o time B inalterado
-      ...updatedReservePlayers, // Coloca o restante da reserva
-      ...losingPlayers // Coloca os perdedores no final
+      ...reservePlayers.slice(0, playersPerTeam), // Novos jogadores do time A (da reserva)
+      ...teamBPlayers, // Time B permanece inalterado
+      ...reservePlayers.slice(playersPerTeam), // Restante da reserva
+      ...teamAPlayers // Jogadores do time A perdedor vão para o final
     ];
   } else if (teamId === "teamB") {
+    // Time B perdeu: substitui os jogadores do time B pelos da reserva
     updatedPlayers = [
-      ...teamAPlayers, // Mantém o time A inalterado
-      ...reservePlayers.slice(0, playersPerTeam), // Substitui os jogadores do time B com os da reserva
-      ...updatedReservePlayers, // Coloca o restante da reserva
-      ...losingPlayers // Coloca os perdedores no final
+      ...teamAPlayers, // Time A permanece inalterado
+      ...reservePlayers.slice(0, playersPerTeam), // Novos jogadores do time B (da reserva)
+      ...reservePlayers.slice(playersPerTeam), // Restante da reserva
+      ...teamBPlayers // Jogadores do time B perdedor vão para o final
     ];
   }
 
+  // Atualiza a lista de jogadores
   players = updatedPlayers;
-  // Salva a lista atualizada no localStorage
   localStorage.setItem("players", JSON.stringify(players));
-  console.log(updatedPlayers); // Para verificar a lista de jogadores
 
-  // Chama renderLists e faz a verificação
+  // Re-renderiza as listas
   renderLists();
+  reorderPlayers();
+  renderTeams(); // Atualiza a lista de times
 }
-
 // Função para mesclar os times
 function mergeTeams() {
   saveState(); // Salva o estado antes de sortear
