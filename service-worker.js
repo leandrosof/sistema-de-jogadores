@@ -2,6 +2,7 @@ const CACHE_NAME = "nucleofc-cache-v1";
 const ASSETS = [
   "/",
   "/index.html",
+  "/logo.png",
   "/styles.css",
   "/app.js",
   "/icon-192x192.png",
