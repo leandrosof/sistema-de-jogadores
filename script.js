@@ -93,16 +93,6 @@ function togglePlayerSelection(index) {
   players[index].checked = !players[index].checked;
   localStorage.setItem("players", JSON.stringify(players));
   renderLists();
-}
-
-function togglePlayerSelection(index) {
-  players[index].checked = !players[index].checked; // Alterna o estado
-  localStorage.setItem("players", JSON.stringify(players)); // Salva a mudança
-  reorderPlayers(); // Chama a função para reorganizar os jogadores
-}
-
-function togglePlayerSelection(index) {
-  players[index].checked = !players[index].checked; // Alterna o estado do checkbox
   reorderPlayers(); // Chama a função para reorganizar os jogadores
 }
 
@@ -314,6 +304,7 @@ function reorderPlayers() {
   // Salva no localStorage
   localStorage.setItem("players", JSON.stringify(players));
   renderPlayerList(); // Re-renderiza a lista com a nova ordem
+  renderTeams(); // Atualiza a lista de times
 }
 
 function uncheckAllPlayers() {
