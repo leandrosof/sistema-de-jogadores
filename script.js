@@ -104,7 +104,7 @@ function renderPlayerList() {
   players.forEach((player, index) => {
     const li = document.createElement("li");
     li.className =
-      "list-group-item d-flex align-items-center justify-content-between";
+      "list-group-item d-flex align-items-center justify-content-between bg-transparent";
 
     // Div para os botões de subir/descer
     const buttonDiv = document.createElement("div");
@@ -137,7 +137,7 @@ function renderPlayerList() {
 
     const playerName = document.createElement("span");
     playerName.textContent = player.name;
-    playerName.className = "fw-bold flex-grow-1";
+    playerName.className = "flex-grow-1";
 
     playerInfoDiv.appendChild(checkbox);
     playerInfoDiv.appendChild(playerName);
@@ -193,7 +193,7 @@ function renderTeams() {
   for (let i = 0; i < teamSize; i++) {
     const li = document.createElement("li");
     li.className =
-      "list-group-item d-flex justify-content-between align-items-center";
+      "list-group-item d-flex justify-content-between align-items-center bg-transparent";
     li.textContent = teamAPlayers[i] || "Aguardando jogador...";
 
     if (teamAPlayers[i]) {
@@ -211,7 +211,7 @@ function renderTeams() {
   for (let i = 0; i < teamSize; i++) {
     const li = document.createElement("li");
     li.className =
-      "list-group-item d-flex justify-content-between align-items-center";
+      "list-group-item d-flex justify-content-between align-items-center bg-transparent";
     li.textContent = teamBPlayers[i] || "Aguardando jogador...";
 
     if (teamBPlayers[i]) {
@@ -232,7 +232,7 @@ function renderTeams() {
     for (let i = 0; i < waitingPlayers.length; i += teamSize) {
       const waitingTeam = waitingPlayers.slice(i, i + teamSize);
       const teamDiv = document.createElement("div");
-      teamDiv.className = "list-group-item";
+      teamDiv.className = "list-group-item bg-transparent small-font";
       teamDiv.innerHTML = `<strong>Próxima ${waitingIndex}:</strong> ${waitingTeam.join(
         ", "
       )}`;
