@@ -47,8 +47,17 @@ function addPlayer() {
       alert("Jogador já cadastrado!");
       return;
     }
-    // saveState(); // Salva o estado antes de adicionar
-    players.push({ name: playerName, checked: true });
+
+    // Encontra o índice do último jogador com checked: true
+    const lastCheckedIndex = players.findIndex((player) => !player.checked);
+
+    // Se não houver jogadores com checked: false, adiciona ao final
+    const insertIndex =
+      lastCheckedIndex === -1 ? players.length : lastCheckedIndex;
+
+    // Insere o novo jogador na posição correta
+    players.splice(insertIndex, 0, { name: playerName, checked: true });
+
     localStorage.setItem("players", JSON.stringify(players));
     document.getElementById("playerName").value = "";
     renderLists();
@@ -190,20 +199,43 @@ function renderTeams() {
   const teamBPlayers = selectedPlayers.slice(teamSize, teamSize * 2);
   const waitingPlayers = selectedPlayers.slice(teamSize * 2);
 
+  // Renderizar Time A
   for (let i = 0; i < teamSize; i++) {
     const li = document.createElement("li");
-    li.className = "list-group-item";
+    li.className =
+      "list-group-item d-flex justify-content-between align-items-center";
     li.textContent = teamAPlayers[i] || "Aguardando jogador...";
+
+    if (teamAPlayers[i]) {
+      const substituteButton = document.createElement("button");
+      substituteButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
+      substituteButton.className = "btn btn-warning btn-sm";
+      substituteButton.onclick = () => substitutePlayer("teamA", i);
+      li.appendChild(substituteButton);
+    }
+
     teamA.appendChild(li);
   }
 
+  // Renderizar Time B
   for (let i = 0; i < teamSize; i++) {
     const li = document.createElement("li");
-    li.className = "list-group-item";
+    li.className =
+      "list-group-item d-flex justify-content-between align-items-center";
     li.textContent = teamBPlayers[i] || "Aguardando jogador...";
+
+    if (teamBPlayers[i]) {
+      const substituteButton = document.createElement("button");
+      substituteButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
+      substituteButton.className = "btn btn-warning btn-sm";
+      substituteButton.onclick = () => substitutePlayer("teamB", i);
+      li.appendChild(substituteButton);
+    }
+
     teamB.appendChild(li);
   }
 
+  // Renderizar Lista de Espera
   if (waitingPlayers.length > 0) {
     waitingListTitle.style.display = "block";
     let waitingIndex = 1;
@@ -222,6 +254,44 @@ function renderTeams() {
   }
 }
 
+function substitutePlayer(teamId, playerIndex) {
+  saveState(); // Salva o estado antes da substituição
+
+  const selectedPlayers = players
+    .filter((player) => player.checked)
+    .map((player) => player.name);
+
+  const teamSize = playersPerTeam;
+  const teamAPlayers = selectedPlayers.slice(0, teamSize);
+  const teamBPlayers = selectedPlayers.slice(teamSize, teamSize * 2);
+  const waitingPlayers = selectedPlayers.slice(teamSize * 2);
+
+  let teamPlayers = teamId === "teamA" ? teamAPlayers : teamBPlayers;
+  const playerToSubstitute = teamPlayers[playerIndex];
+
+  if (waitingPlayers.length > 0) {
+    const substitutePlayer = waitingPlayers[0]; // Pega o primeiro jogador da lista de espera
+
+    // Remove o jogador substituído do time e adiciona o substituto
+    teamPlayers[playerIndex] = substitutePlayer;
+
+    // Remove o substituto da lista de espera e adiciona o jogador substituído ao final
+    waitingPlayers.shift();
+    waitingPlayers.push(playerToSubstitute);
+
+    // Atualiza a lista de jogadores
+    const updatedPlayers =
+      teamId === "teamA"
+        ? [...teamPlayers, ...teamBPlayers, ...waitingPlayers]
+        : [...teamAPlayers, ...teamPlayers, ...waitingPlayers];
+
+    players = updatedPlayers.map((name) => ({ name, checked: true }));
+    localStorage.setItem("players", JSON.stringify(players));
+    renderLists();
+  } else {
+    alert("Não há jogadores na lista de espera para substituir.");
+  }
+}
 function reorderPlayers() {
   // Primeiro, separa os jogadores em dois grupos: marcados e não marcados
   players = players.sort((a, b) => {
