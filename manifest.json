@@ -13,7 +13,7 @@
             "sizes": "512x512"
         }
     ],
-    "start_url": "/",
+    "start_url": "/sistema-de-jogadores/",
     "display": "standalone",
     "background_color": "#1E1E1E",
     "theme_color": "#218838"
