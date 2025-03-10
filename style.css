@@ -1,5 +1,5 @@
 header {
-  height: 60px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -83,4 +83,20 @@ footer {
 }
 .nav-tabs .nav-link {
   color: #28a745;
+}
+
+/* Estilo para o checkbox */
+input[type="checkbox"] {
+  accent-color: #28a745; /* Cor verde */
+}
+
+/* Caso queira personalizar o aspecto do checkbox */
+input[type="checkbox"]:checked {
+  background-color: #28a745; /* Cor de fundo quando o checkbox está marcado */
+  border-color: #28a745; /* Cor da borda */
+}
+
+/* Estilo do hover do checkbox */
+input[type="checkbox"]:hover {
+  border-color: #218838; /* Tom de verde mais escuro no hover */
 }
