@@ -86,12 +86,20 @@ function togglePlayerSelection(index) {
   renderLists();
 }
 
+function togglePlayerSelection(index) {
+  players[index].checked = !players[index].checked; // Alterna o estado
+  localStorage.setItem("players", JSON.stringify(players)); // Salva a mudança
+  reorderPlayers(); // Chama a função para reorganizar os jogadores
+}
+
+function togglePlayerSelection(index) {
+  players[index].checked = !players[index].checked; // Alterna o estado do checkbox
+  reorderPlayers(); // Chama a função para reorganizar os jogadores
+}
+
 // Função para renderizar a lista de jogadores
 function renderPlayerList() {
   const playerList = document.getElementById("playerList");
-  // const removeAllButton = document.querySelector(
-  //   "button[onclick='clearAllPlayers()']"
-  // );
 
   playerList.innerHTML = "";
   players.forEach((player, index) => {
@@ -160,10 +168,6 @@ function renderPlayerList() {
 
     playerList.appendChild(li);
   });
-
-  // if (removeAllButton) {
-  //   removeAllButton.style.display = showButtons ? "block" : "none";
-  // }
 }
 
 // Função para renderizar os times e a lista de espera
@@ -216,6 +220,31 @@ function renderTeams() {
   } else {
     waitingListTitle.style.display = "none";
   }
+}
+
+function reorderPlayers() {
+  // Primeiro, separa os jogadores em dois grupos: marcados e não marcados
+  players = players.sort((a, b) => {
+    return b.checked - a.checked; // True (1) vem antes de False (0)
+  });
+
+  // Salva no localStorage
+  localStorage.setItem("players", JSON.stringify(players));
+  renderPlayerList(); // Re-renderiza a lista com a nova ordem
+}
+
+function uncheckAllPlayers() {
+  document
+    .querySelectorAll('#playerList input[type="checkbox"]')
+    .forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+
+  // Atualiza o estado dos jogadores no array e salva no localStorage
+  players.forEach((player) => (player.checked = false));
+  localStorage.setItem("players", JSON.stringify(players));
+
+  reorderPlayers(); // Reorganiza a lista com os valores atualizados
 }
 
 // Função para mover um jogador para a lista de espera
