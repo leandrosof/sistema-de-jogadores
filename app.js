@@ -3,7 +3,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
     const SW_TIMEOUT = 5000;
     const registrationPromise =
-      navigator.serviceWorker.register("/service-worker.js");
+      navigator.serviceWorker.register("service-worker.js");
 
     Promise.race([
       registrationPromise,
