@@ -1,6 +1,5 @@
 const CACHE_PREFIX = "nucleofc-cache";
-const CACHE_VERSION =
-  "v3" + (location.hostname === "localhost" ? "-" + Date.now() : "");
+const CACHE_VERSION = "v4"; // ATUALIZE SEMPRE QUE MODIFICAR OS ARQUIVOS
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
 const ASSETS = [
@@ -13,60 +12,45 @@ const ASSETS = [
   "/icon-512x512.png"
 ];
 
+// --- INSTALAÇÃO ---
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()) // Força ativação imediata
   );
 });
 
+// --- ATIVAÇÃO ---
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((cacheNames) =>
-        Promise.all(
+      .then((cacheNames) => {
+        return Promise.all(
           cacheNames
             .filter(
               (name) => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME
             )
-            .map((name) => caches.delete(name))
-        )
-      )
-      .then(() => self.clients.claim())
+            .map((name) => {
+              console.log("[SW] Removendo cache antigo:", name);
+              return caches.delete(name); // Deleta TODOS os caches antigos
+            })
+        );
+      })
+      .then(() => {
+        console.log("[SW] Cache limpo e pronto para nova versão!");
+        return self.clients.claim(); // Assume controle de todas as abas
+      })
   );
 });
 
+// --- FETCH ---
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
-
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Atualiza o cache em segundo plano (se a resposta da rede for válida)
-      const fetchAndUpdate = fetch(event.request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      });
-
-      // Retorna do cache se existir, senão busca na rede
-      return (
-        cachedResponse ||
-        fetchAndUpdate.catch(() => {
-          if (event.request.headers.get("accept").includes("text/html")) {
-            return new Response(
-              "<h1>Offline</h1><p>Conteúdo não disponível sem conexão.</p>",
-              { headers: { "Content-Type": "text/html" } }
-            );
-          }
-        })
-      );
-    })
+    caches
+      .match(event.request)
+      .then((cachedResponse) => cachedResponse || fetch(event.request))
   );
 });
