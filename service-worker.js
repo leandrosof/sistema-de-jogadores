@@ -1,4 +1,4 @@
-const CACHE_NAME = "nucleofc-cache-v1.5";
+const CACHE_NAME = "nucleofc-cache-v3";
 const ASSETS = [
   "/",
   "/index.html",
