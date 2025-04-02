@@ -1,7 +1,8 @@
-// service-worker.js
+const CACHE_PREFIX = "nucleofc-cache";
+const CACHE_VERSION =
+  "v3" + (location.hostname === "localhost" ? "-" + Date.now() : "");
+const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
-const CACHE_VERSION = "v3-" + Date.now(); // Versão única para forçar atualização
-const CACHE_NAME = `nucleofc-cache-${CACHE_VERSION}`;
 const ASSETS = [
   "/",
   "/index.html",
@@ -9,91 +10,63 @@ const ASSETS = [
   "/styles.css",
   "/app.js",
   "/icon-192x192.png",
-  "/icon-512x512.png",
-  "/manifest.json"
+  "/icon-512x512.png"
 ];
 
-// Instalação do Service Worker
 self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Installing version:", CACHE_NAME);
-
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => {
-        console.log("[Service Worker] Caching assets");
-        return cache.addAll(ASSETS);
-      })
-      .then(() => {
-        console.log("[Service Worker] Skip waiting on install");
-        return self.skipWaiting(); // Força o novo SW a assumir controle imediatamente
-      })
+      .then((cache) => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Ativação do Service Worker
 self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating new version:", CACHE_NAME);
-
   event.waitUntil(
     caches
       .keys()
-      .then((cacheNames) => {
-        return Promise.all(
+      .then((cacheNames) =>
+        Promise.all(
           cacheNames
             .filter(
-              (name) =>
-                name.startsWith("nucleofc-cache-") && name !== CACHE_NAME
+              (name) => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME
             )
-            .map((name) => {
-              console.log("[Service Worker] Deleting old cache:", name);
-              return caches.delete(name);
-            })
-        );
-      })
-      .then(() => {
-        console.log("[Service Worker] Claiming clients");
-        return self.clients.claim(); // Assume controle de todas as páginas
-      })
+            .map((name) => caches.delete(name))
+        )
+      )
+      .then(() => self.clients.claim())
   );
 });
 
-// Estratégia de cache: Cache-first, fallback para network
 self.addEventListener("fetch", (event) => {
-  console.log("[Service Worker] Fetching:", event.request.url);
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((cachedResponse) => {
-        // Retorna do cache se existir, senão busca na rede
-        return (
-          cachedResponse ||
-          fetch(event.request).then((response) => {
-            // Se for uma requisição GET, adiciona ao cache para futuras requisições
-            if (event.request.method === "GET") {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            }
-            return response;
-          })
-        );
-      })
-      .catch(() => {
-        // Fallback para páginas offline
-        if (event.request.mode === "navigate") {
-          return caches.match("/offline.html");
+    caches.match(event.request).then((cachedResponse) => {
+      // Atualiza o cache em segundo plano (se a resposta da rede for válida)
+      const fetchAndUpdate = fetch(event.request).then((response) => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches
+            .open(CACHE_NAME)
+            .then((cache) => cache.put(event.request, clone));
         }
-      })
-  );
-});
+        return response;
+      });
 
-// Mensagens para atualização forçada
-self.addEventListener("message", (event) => {
-  if (event.data === "skipWaiting") {
-    console.log("[Service Worker] Skipping waiting due to message");
-    self.skipWaiting();
-  }
+      // Retorna do cache se existir, senão busca na rede
+      return (
+        cachedResponse ||
+        fetchAndUpdate.catch(() => {
+          if (event.request.headers.get("accept").includes("text/html")) {
+            return new Response(
+              "<h1>Offline</h1><p>Conteúdo não disponível sem conexão.</p>",
+              { headers: { "Content-Type": "text/html" } }
+            );
+          }
+        })
+      );
+    })
+  );
 });

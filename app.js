@@ -1,56 +1,65 @@
-// Registrar Service Worker
+// app.js
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then(function (registration) {
-        console.log(
-          "ServiceWorker registration successful with scope: ",
-          registration.scope
-        );
+    const SW_TIMEOUT = 5000;
+    const registrationPromise =
+      navigator.serviceWorker.register("/service-worker.js");
 
-        // Verifica se há atualizações
+    Promise.race([
+      registrationPromise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject("SW timeout"), SW_TIMEOUT)
+      )
+    ])
+      .then((registration) => {
+        console.log("SW registrado:", registration.scope);
+
+        // Verificação imediata + periódica
+        registration.update();
+        setInterval(() => registration.update(), 60 * 60 * 1000);
+
+        // Monitorar atualizações
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
-          console.log("New Service Worker found:", newWorker);
-
           newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed") {
-              if (navigator.serviceWorker.controller) {
-                console.log("New content available - please refresh!");
-                // Aqui você pode mostrar um botão para o usuário atualizar
-                showUpdateUI();
-              } else {
-                console.log("Content is cached for offline use.");
-              }
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              showUpdateUI();
             }
           });
         });
       })
-      .catch(function (err) {
-        console.log("ServiceWorker registration failed: ", err);
-      });
-
-    // Forçar atualização periódica
-    setInterval(() => {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.update();
-      });
-    }, 60 * 60 * 1000); // Verifica atualizações a cada hora
+      .catch((err) => console.error("Erro no SW:", err));
   });
 }
 
 function showUpdateUI() {
-  // Implemente sua lógica de UI para notificar o usuário
+  if (
+    document.getElementById("sw-update") ||
+    localStorage.getItem("sw-update-ignored")
+  )
+    return;
+
   const updateDiv = document.createElement("div");
+  updateDiv.id = "sw-update";
   updateDiv.innerHTML = `
-    <div style="position: fixed; bottom: 20px; right: 20px; background: #fff; padding: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 1000;">
-      Nova versão disponível! <button id="refreshButton">Atualizar</button>
+    <div style="/* estilos */">
+      <p>Nova versão disponível!</p>
+      <button id="sw-update-reload">Atualizar</button>
+      <button id="sw-update-dismiss">Ignorar</button>
     </div>
   `;
+
   document.body.appendChild(updateDiv);
 
-  document.getElementById("refreshButton").addEventListener("click", () => {
-    window.location.reload(true);
+  document.getElementById("sw-update-reload").addEventListener("click", () => {
+    window.location.reload();
+  });
+
+  document.getElementById("sw-update-dismiss").addEventListener("click", () => {
+    localStorage.setItem("sw-update-ignored", "true");
+    updateDiv.remove();
   });
 }
