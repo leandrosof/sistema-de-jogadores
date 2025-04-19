@@ -1,27 +1,18 @@
-const withPWA = require("next-pwa")({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
-  register: true,
-  skipWaiting: true
-});
-
-module.exports = withPWA({
-  reactStrictMode: true,
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production"
-  },
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "export",
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3000",
-        pathname: "/**"
+        protocol: "https",
+        hostname: "**" // ou especifique ex: 'images.unsplash.com'
       }
     ]
   },
+  // Se estiver usando PWA, mantenha isso também:
   experimental: {
     optimizeCss: true
-  },
-  output: "export" // Configure para exportação estática
-});
+  }
+};
+
+module.exports = nextConfig;
