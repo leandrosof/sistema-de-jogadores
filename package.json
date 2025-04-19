@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export",
+    "export": "next build",
     "deploy": "gh-pages -d out",
     "start": "next start",
     "lint": "next lint"

@@ -2,7 +2,7 @@
 const nextConfig = {
   output: "export",
   images: {
-    unoptimized: true // Se não quiser usar a otimização de imagens no GitHub Pages
+    unoptimized: true // Necessary for static exports
   }
 };
 
