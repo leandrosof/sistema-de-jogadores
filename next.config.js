@@ -1,20 +1,3 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  // Configuração otimizada para a versão 13+
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production" // Remove consoles em produção
-  },
-  images: {
-    domains: ["localhost"]
-  },
-  // Configuração PWA alternativa (usando plugin externo)
-  experimental: {
-    optimizeCss: true // Otimização CSS automática
-  }
-};
-
-// Configuração PWA separada (opcional)
 const withPWA = require("next-pwa")({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
@@ -22,4 +5,23 @@ const withPWA = require("next-pwa")({
   skipWaiting: true
 });
 
-module.exports = withPWA(nextConfig);
+module.exports = withPWA({
+  reactStrictMode: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production"
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/**"
+      }
+    ]
+  },
+  experimental: {
+    optimizeCss: true
+  },
+  output: "export" // Configure para exportação estática
+});
