@@ -2,12 +2,12 @@
   "name": "nucleofc",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/leandrosof/sistema-de-jogadores",
+  "homepage": "https://nucleofc.pro",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "export": "next export",
-    "deploy": "yarn build && yarn export && gh-pages -d out",
+    "deploy": "gh-pages -d out",
     "start": "next start",
     "lint": "next lint"
   },
