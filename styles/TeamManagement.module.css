@@ -1,0 +1,40 @@
+.container {
+  padding: 1rem;
+}
+
+.teamsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.team {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.team h3 {
+  margin-top: 0;
+  color: #28a745;
+  text-align: center;
+}
+
+.reserves {
+  background: #e9ecef;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.button {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .teamsContainer {
+    grid-template-columns: 1fr;
+  }
+}

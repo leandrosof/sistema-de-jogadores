@@ -1,0 +1,46 @@
+.container {
+  padding: 1rem;
+}
+
+.addForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.addForm input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .addForm {
+    flex-direction: column;
+  }
+}
