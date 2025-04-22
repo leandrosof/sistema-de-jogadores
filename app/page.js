@@ -1,5 +1,6 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import Header from "@/components/Header";
 import PlayerList from "@/components/PlayerList";
 import TeamManagement from "@/components/TeamManagement";
 import ConfigPanel from "@/components/ConfigPanel";
