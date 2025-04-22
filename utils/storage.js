@@ -1,3 +1,5 @@
+"use client";
+
 export const savePlayers = (players) => {
   localStorage.setItem("players", JSON.stringify(players));
 };

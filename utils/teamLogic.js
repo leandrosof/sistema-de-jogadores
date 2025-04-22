@@ -1,3 +1,5 @@
+"use client";
+
 export const shufflePlayers = (players) => {
   const shuffled = [...players];
   for (let i = shuffled.length - 1; i > 0; i--) {

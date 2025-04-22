@@ -1,9 +1,9 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
   images: {
-    unoptimized: true // Se não quiser usar a otimização de imagens no GitHub Pages
-  }
+    unoptimized: true // Necessário para export estático
+  },
+  reactStrictMode: true
 };
 
 module.exports = nextConfig;
