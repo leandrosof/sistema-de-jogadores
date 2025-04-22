@@ -125,10 +125,22 @@ export default function TeamManagement({
 
         {/* Container dos botões com layout responsivo */}
         <div className="d-flex flex-column flex-md-row gap-2 justify-content-center justify-content-md-end align-items-center">
-          <button onClick={sortTeamsOnly} className="btn btn-primary btn-sm">
-            <FontAwesomeIcon icon={faRandom} className="me-1" />
-            <span className="d-none d-sm-inline">Sortear</span> A x B
-          </button>
+          <div className="d-flex gap-2">
+            {currentIndex.current > 0 && (
+              <button
+                onClick={undoLastAction}
+                className="btn btn-secondary btn-sm"
+                title="Desfazer última ação"
+              >
+                <FontAwesomeIcon icon={faUndo} className="me-1" />
+                <span className="d-none d-sm-inline">Desfazer</span>
+              </button>
+            )}
+            <button onClick={sortTeamsOnly} className="btn btn-primary btn-sm">
+              <FontAwesomeIcon icon={faRandom} className="me-1" />
+              <span className="d-none d-sm-inline">Sortear</span> A x B
+            </button>
+          </div>
 
           <div className="d-flex gap-2">
             <button
@@ -148,17 +160,6 @@ export default function TeamManagement({
               <FontAwesomeIcon icon={faFlag} className="me-1" />
               <span className="d-none d-sm-inline">Time</span> B Perdeu
             </button>
-
-            {currentIndex.current > 0 && (
-              <button
-                onClick={undoLastAction}
-                className="btn btn-secondary btn-sm"
-                title="Desfazer última ação"
-              >
-                <FontAwesomeIcon icon={faUndo} className="me-1" />
-                <span className="d-none d-sm-inline">Desfazer</span>
-              </button>
-            )}
           </div>
         </div>
       </div>
