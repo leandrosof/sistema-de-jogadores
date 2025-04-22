@@ -1,6 +1,18 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faEye,
+  faEyeSlash,
+  faTimesCircle,
+  faArrowUp,
+  faArrowDown,
+  faSignInAlt,
+  faTrash,
+  faCheck
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function PlayerList({ players, setPlayers }) {
   const [newPlayerName, setNewPlayerName] = useState("");
@@ -146,7 +158,7 @@ export default function PlayerList({ players, setPlayers }) {
           onClick={addPlayer}
           className="btn btn-nucleo btn-nucleo-primary d-flex align-items-center justify-content-center"
         >
-          <i className="fas fa-plus text-white"></i>
+          <FontAwesomeIcon icon={faPlus} className="text-white" />
         </button>
       </div>
 
@@ -159,11 +171,12 @@ export default function PlayerList({ players, setPlayers }) {
           >
             {showButtons ? (
               <>
-                <i className="fas fa-eye-slash me-1"></i> Ocultar Ações
+                <FontAwesomeIcon icon={faEyeSlash} className="me-1" /> Ocultar
+                Ações
               </>
             ) : (
               <>
-                <i className="fas fa-eye me-1"></i> Mostrar Ações
+                <FontAwesomeIcon icon={faEye} className="me-1" /> Mostrar Ações
               </>
             )}
           </button>
@@ -171,7 +184,8 @@ export default function PlayerList({ players, setPlayers }) {
             onClick={uncheckAllPlayers}
             className="btn btn-warning btn-sm"
           >
-            <i className="fas fa-times-circle me-1"></i> Desmarcar Todos
+            <FontAwesomeIcon icon={faTimesCircle} className="me-1" /> Desmarcar
+            Todos
           </button>
         </div>
       </div>
@@ -212,7 +226,7 @@ export default function PlayerList({ players, setPlayers }) {
                     player.checked !== sortedPlayers[index - 1].checked
                   }
                 >
-                  <i className="fas fa-arrow-up"></i>
+                  <FontAwesomeIcon icon={faArrowUp} />
                 </button>
                 <button
                   onClick={() =>
@@ -227,7 +241,7 @@ export default function PlayerList({ players, setPlayers }) {
                     player.checked !== sortedPlayers[index + 1].checked
                   }
                 >
-                  <i className="fas fa-arrow-down"></i>
+                  <FontAwesomeIcon icon={faArrowDown} />
                 </button>
                 <button
                   onClick={() =>
@@ -238,7 +252,7 @@ export default function PlayerList({ players, setPlayers }) {
                   className="btn btn-secondary btn-sm"
                   title="Mover para o final do grupo"
                 >
-                  <i className="fas fa-sign-in-alt"></i>
+                  <FontAwesomeIcon icon={faSignInAlt} />
                 </button>
                 <button
                   onClick={() =>
@@ -249,7 +263,7 @@ export default function PlayerList({ players, setPlayers }) {
                   className="btn btn-danger btn-sm"
                   title="Remover jogador"
                 >
-                  <i className="fas fa-trash"></i>
+                  <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
             )}

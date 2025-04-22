@@ -1,3 +1,11 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRandom,
+  faFlag,
+  faSyncAlt,
+  faUndo
+} from "@fortawesome/free-solid-svg-icons";
+
 import { useState, useEffect, useRef } from "react";
 
 export default function TeamManagement({
@@ -117,25 +125,25 @@ export default function TeamManagement({
               className="btn btn-secondary me-2"
               title="Desfazer última ação"
             >
-              <i className="fas fa-undo me-2"></i>Desfazer
+              <FontAwesomeIcon icon={faUndo} className="me-2" /> Desfazer
             </button>
           )}
           <button onClick={sortTeamsOnly} className="btn btn-primary me-2">
-            <i className="fas fa-random me-2"></i>Sortear A x B
+            <FontAwesomeIcon icon={faRandom} className="me-2" /> Sortear A x B
           </button>
           <button
             onClick={() => handleTeamLost("A")}
             className="btn btn-lost me-2"
             disabled={reserves.length === 0}
           >
-            <i className="fas fa-flag me-2"></i>Time A Perdeu
+            <FontAwesomeIcon icon={faFlag} className="me-2" /> Time A Perdeu
           </button>
           <button
             onClick={() => handleTeamLost("B")}
             className="btn btn-lost"
             disabled={reserves.length === 0}
           >
-            <i className="fas fa-flag me-2"></i>Time B Perdeu
+            <FontAwesomeIcon icon={faFlag} className="me-2" /> Time B Perdeu
           </button>
         </div>
       </div>
@@ -170,7 +178,7 @@ export default function TeamManagement({
                         ]);
                       }}
                     >
-                      <i className="fas fa-sync-alt"></i>
+                      <FontAwesomeIcon icon={faSyncAlt} />
                     </button>
                   )}
                 </li>
@@ -206,7 +214,7 @@ export default function TeamManagement({
                         ]);
                       }}
                     >
-                      <i className="fas fa-sync-alt"></i>
+                      <FontAwesomeIcon icon={faSyncAlt} />
                     </button>
                   )}
                 </li>

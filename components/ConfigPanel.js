@@ -1,4 +1,10 @@
 import { useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFileExport,
+  faFileImport,
+  faTrashAlt
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function ConfigPanel({
   playersPerTeam,
@@ -68,14 +74,16 @@ export default function ConfigPanel({
             className="btn btn-import-export"
             disabled={players.length === 0}
           >
-            <i className="fas fa-file-export me-2"></i>Exportar
+            <FontAwesomeIcon icon={faFileExport} className="me-2" />
+            Exportar
           </button>
 
           <button
             onClick={() => fileInputRef.current.click()}
             className="btn btn-import-export"
           >
-            <i className="fas fa-file-import me-2"></i>Importar
+            <FontAwesomeIcon icon={faFileImport} className="me-2" />
+            Importar
           </button>
 
           <input
@@ -95,7 +103,8 @@ export default function ConfigPanel({
           className="btn btn-danger"
           disabled={players.length === 0}
         >
-          <i className="fas fa-trash-alt me-2"></i>Limpar Todos os Jogadores
+          <FontAwesomeIcon icon={faTrashAlt} className="me-2" />
+          Limpar Todos os Jogadores
         </button>
       </div>
     </div>

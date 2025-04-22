@@ -24,10 +24,9 @@ jobs:
       - name: Instalar dependências
         run: yarn install
 
-      - name: Build e Export
+      - name: Build
         run: |
           yarn build
-          yarn export
 
       - name: Deploy na branch gh-pages
         uses: peaceiris/actions-gh-pages@v3
