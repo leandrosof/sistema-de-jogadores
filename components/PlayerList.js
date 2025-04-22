@@ -173,22 +173,24 @@ export default function PlayerList({ players, setPlayers }) {
           >
             {showButtons ? (
               <>
-                <FontAwesomeIcon icon={faEyeSlash} className="me-1" /> Ocultar
+                <FontAwesomeIcon icon={faEyeSlash} className="me-1" />
                 Ações
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faEye} className="me-1" /> Mostrar Ações
+                <FontAwesomeIcon icon={faEye} className="me-1" /> Ações
               </>
             )}
           </button>
-          <button
-            onClick={uncheckAllPlayers}
-            className="btn btn-warning btn-sm"
-          >
-            <FontAwesomeIcon icon={faTimesCircle} className="me-1" /> Desmarcar
-            Todos
-          </button>
+          {showButtons && (
+            <button
+              onClick={uncheckAllPlayers}
+              className="btn btn-warning btn-sm"
+            >
+              <FontAwesomeIcon icon={faTimesCircle} className="me-1" />{" "}
+              Desmarcar Todos
+            </button>
+          )}
         </div>
       </div>
 
