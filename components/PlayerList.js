@@ -158,7 +158,7 @@ export default function PlayerList({ players, setPlayers }) {
         />
         <button
           onClick={addPlayer}
-          className="btn btn-nucleo btn-nucleo-primary d-flex align-items-center justify-content-center"
+          className="btn d-flex align-items-center justify-content-center bg-success"
         >
           <FontAwesomeIcon icon={faPlus} className="text-white" />
         </button>
