@@ -117,35 +117,49 @@ export default function TeamManagement({
 
   return (
     <div className="card mt-4">
-      <div className="card-header d-flex justify-content-between align-items-center">
-        <h3 className="mb-0">Gerenciamento de Times</h3>
-        <div>
-          {currentIndex.current > 0 && (
+      <div className="card-header">
+        {/* Título sempre acima */}
+        <h3 className="mb-3 text-center text-md-start">
+          Gerenciamento de Times
+        </h3>
+
+        {/* Container dos botões com layout responsivo */}
+        <div className="d-flex flex-column flex-md-row gap-2 justify-content-center justify-content-md-end align-items-center">
+          <button onClick={sortTeamsOnly} className="btn btn-primary btn-sm">
+            <FontAwesomeIcon icon={faRandom} className="me-1" />
+            <span className="d-none d-sm-inline">Sortear</span> A x B
+          </button>
+
+          <div className="d-flex gap-2">
             <button
-              onClick={undoLastAction}
-              className="btn btn-secondary me-2"
-              title="Desfazer última ação"
+              onClick={() => handleTeamLost("A")}
+              className="btn btn-danger btn-sm"
+              disabled={reserves.length === 0}
             >
-              <FontAwesomeIcon icon={faUndo} className="me-2" /> Desfazer
+              <FontAwesomeIcon icon={faFlag} className="me-1" />
+              <span className="d-none d-sm-inline">Time</span> A Perdeu
             </button>
-          )}
-          <button onClick={sortTeamsOnly} className="btn btn-primary me-2">
-            <FontAwesomeIcon icon={faRandom} className="me-2" /> Sortear A x B
-          </button>
-          <button
-            onClick={() => handleTeamLost("A")}
-            className="btn btn-lost me-2"
-            disabled={reserves.length === 0}
-          >
-            <FontAwesomeIcon icon={faFlag} className="me-2" /> Time A Perdeu
-          </button>
-          <button
-            onClick={() => handleTeamLost("B")}
-            className="btn btn-lost"
-            disabled={reserves.length === 0}
-          >
-            <FontAwesomeIcon icon={faFlag} className="me-2" /> Time B Perdeu
-          </button>
+
+            <button
+              onClick={() => handleTeamLost("B")}
+              className="btn btn-danger btn-sm"
+              disabled={reserves.length === 0}
+            >
+              <FontAwesomeIcon icon={faFlag} className="me-1" />
+              <span className="d-none d-sm-inline">Time</span> B Perdeu
+            </button>
+
+            {currentIndex.current > 0 && (
+              <button
+                onClick={undoLastAction}
+                className="btn btn-secondary btn-sm"
+                title="Desfazer última ação"
+              >
+                <FontAwesomeIcon icon={faUndo} className="me-1" />
+                <span className="d-none d-sm-inline">Desfazer</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -159,7 +173,6 @@ export default function TeamManagement({
                   key={index}
                   className="list-group-item d-flex justify-content-between"
                 >
-                  <span>{player?.name || "Vaga"}</span>
                   {reserves.length > 0 && (
                     <button
                       className="btn btn-sm btn-outline-primary"
@@ -182,6 +195,8 @@ export default function TeamManagement({
                       <FontAwesomeIcon icon={faSyncAlt} />
                     </button>
                   )}
+
+                  <span>{player?.name || "Vaga"}</span>
                 </li>
               ))}
             </ul>
@@ -195,7 +210,6 @@ export default function TeamManagement({
                   key={index}
                   className="list-group-item d-flex justify-content-between"
                 >
-                  <span>{player?.name || "Vaga"}</span>
                   {reserves.length > 0 && (
                     <button
                       className="btn btn-sm btn-outline-primary"
@@ -218,6 +232,7 @@ export default function TeamManagement({
                       <FontAwesomeIcon icon={faSyncAlt} />
                     </button>
                   )}
+                  <span>{player?.name || "Vaga"}</span>
                 </li>
               ))}
             </ul>
