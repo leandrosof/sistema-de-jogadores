@@ -12,15 +12,13 @@ import {
   faArrowUp,
   faArrowDown,
   faSignInAlt,
-  faTrash,
-  faCheck
+  faTrash
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function PlayerList({ players, setPlayers }) {
+export default function PlayerList({ players, setPlayers, playersPerTeam }) {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [showButtons, setShowButtons] = useState(false);
 
-  // Adiciona novo jogador mantendo a ordem de chegada
   const addPlayer = () => {
     const name = newPlayerName.trim();
 
@@ -34,46 +32,51 @@ export default function PlayerList({ players, setPlayers }) {
       return;
     }
 
-    const newPlayer = {
-      name,
-      checked: true,
-      createdAt: new Date().getTime()
-    };
+    const newPlayer = { name, checked: true };
 
-    setPlayers([
-      ...players.filter((p) => p.checked),
-      newPlayer,
-      ...players.filter((p) => !p.checked)
-    ]);
+    // adiciona após o último checked
+    const lastCheckedIndex = [...players]
+      .map((p, i) => (p.checked ? i : -1))
+      .filter((i) => i !== -1)
+      .pop();
+
+    if (lastCheckedIndex !== undefined && lastCheckedIndex >= 0) {
+      const before = players.slice(0, lastCheckedIndex + 1);
+      const after = players.slice(lastCheckedIndex + 1);
+      setPlayers([...before, newPlayer, ...after]);
+    } else {
+      // nenhum checked, adiciona no início
+      setPlayers([newPlayer, ...players]);
+    }
 
     toast.success(`Jogador "${name}" adicionado com sucesso!`);
     setNewPlayerName("");
   };
 
-  // Alterna seleção mantendo a ordem original
   const togglePlayer = (index) => {
-    const playerToToggle = players[index];
-    const newPlayers = players.map((p) => ({
-      ...p,
-      // Mantém a ordem original usando createdAt para desmarcados
-      sortKey:
-        p.checked === playerToToggle.checked ? p.createdAt : p.checked ? 1 : -1
-    }));
+    const updated = [...players];
+    const toggled = { ...updated[index], checked: !updated[index].checked };
+    updated.splice(index, 1); // remove do local atual
 
-    const updatedPlayers = newPlayers.map((p) =>
-      p.name === playerToToggle.name ? { ...p, checked: !p.checked } : p
-    );
+    if (toggled.checked) {
+      // move para o final do grupo checked
+      const lastCheckedIndex = updated
+        .map((p, i) => (p.checked ? i : -1))
+        .filter((i) => i !== -1)
+        .pop();
+      if (lastCheckedIndex !== undefined) {
+        updated.splice(lastCheckedIndex + 1, 0, toggled);
+      } else {
+        updated.unshift(toggled); // nenhum checked, vai pro início
+      }
+    } else {
+      // move para o final do grupo unchecked
+      updated.push(toggled);
+    }
 
-    // Ordena: checked primeiro, depois pela ordem de chegada
-    setPlayers(
-      updatedPlayers.sort((a, b) => {
-        if (a.checked !== b.checked) return b.checked - a.checked;
-        return a.createdAt - b.createdAt;
-      })
-    );
+    setPlayers(updated);
   };
 
-  // Move jogador para cima (mantendo a ordem relativa)
   const movePlayerUp = (index) => {
     if (index > 0 && players[index].checked === players[index - 1].checked) {
       const newPlayers = [...players];
@@ -85,7 +88,6 @@ export default function PlayerList({ players, setPlayers }) {
     }
   };
 
-  // Move jogador para baixo (mantendo a ordem relativa)
   const movePlayerDown = (index) => {
     if (
       index < players.length - 1 &&
@@ -100,39 +102,41 @@ export default function PlayerList({ players, setPlayers }) {
     }
   };
 
-  // Move jogador para o final do seu grupo (checked/unchecked)
   const movePlayerToEnd = (index) => {
     const player = players[index];
-    const newPlayers = players.filter((p) => p.name !== player.name);
-    const targetGroup = player.checked
-      ? newPlayers.filter((p) => p.checked)
-      : newPlayers.filter((p) => !p.checked);
+    const newPlayers = [...players];
+    newPlayers.splice(index, 1); // remove o jogador atual
 
-    setPlayers([
-      ...newPlayers.filter((p) => p.checked && p.name !== player.name),
-      ...(player.checked ? [player] : []),
-      ...newPlayers.filter((p) => !p.checked && p.name !== player.name),
-      ...(!player.checked ? [player] : [])
-    ]);
+    let newIndex;
+
+    if (player.checked) {
+      const lastCheckedIndex = newPlayers
+        .map((p, i) => (p.checked ? i : -1))
+        .filter((i) => i !== -1)
+        .pop();
+
+      newIndex = lastCheckedIndex !== undefined ? lastCheckedIndex + 1 : 0;
+      newPlayers.splice(newIndex, 0, player);
+    } else {
+      newPlayers.push(player);
+      newIndex = newPlayers.length - 1;
+    }
+
+    // só atualiza se a posição mudar
+    if (index !== newIndex) {
+      setPlayers(newPlayers);
+    }
   };
 
-  // Remove jogador
   const removePlayer = (index) => {
     const newPlayers = [...players];
     newPlayers.splice(index, 1);
     setPlayers(newPlayers);
   };
 
-  // Desmarca todos mantendo a ordem
   const uncheckAllPlayers = () => {
-    setPlayers(players.map((player) => ({ ...player, checked: false })));
+    setPlayers(players.map((p) => ({ ...p, checked: false })));
   };
-
-  // Agrupa jogadores por status checked mantendo a ordem relativa
-  const sortedPlayers = [...players].sort((a, b) => {
-    if (a.checked !== b.checked) return b.checked - a.checked;
-    return a.createdAt - b.createdAt;
-  });
 
   return (
     <div className="mt-3">
@@ -147,6 +151,7 @@ export default function PlayerList({ players, setPlayers }) {
         draggable
         pauseOnHover
       />
+
       <div className="d-flex gap-2 mb-4">
         <input
           type="text"
@@ -154,7 +159,7 @@ export default function PlayerList({ players, setPlayers }) {
           placeholder="Nome do Jogador"
           value={newPlayerName}
           onChange={(e) => setNewPlayerName(e.target.value)}
-          onClick={(e) => e.key === "Enter" && addPlayer()}
+          onKeyDown={(e) => e.key === "Enter" && addPlayer()}
         />
         <button
           onClick={addPlayer}
@@ -187,7 +192,7 @@ export default function PlayerList({ players, setPlayers }) {
               onClick={uncheckAllPlayers}
               className="btn btn-warning btn-sm"
             >
-              <FontAwesomeIcon icon={faTimesCircle} className="me-1" />{" "}
+              <FontAwesomeIcon icon={faTimesCircle} className="me-1" />
               Desmarcar Todos
             </button>
           )}
@@ -195,7 +200,7 @@ export default function PlayerList({ players, setPlayers }) {
       </div>
 
       <ul className="list-group">
-        {sortedPlayers.map((player, index) => (
+        {players.map((player, index) => (
           <li
             key={`${player.name}-${index}`}
             className={`list-group-item d-flex justify-content-between align-items-center ${
@@ -206,9 +211,7 @@ export default function PlayerList({ players, setPlayers }) {
               <input
                 type="checkbox"
                 checked={player.checked}
-                onChange={() =>
-                  togglePlayer(players.findIndex((p) => p.name === player.name))
-                }
+                onChange={() => togglePlayer(index)}
                 className="form-check-input me-3"
                 style={{ transform: "scale(1.3)" }}
               />
@@ -218,52 +221,35 @@ export default function PlayerList({ players, setPlayers }) {
             {showButtons && (
               <div className="d-flex gap-2">
                 <button
-                  onClick={() =>
-                    movePlayerUp(
-                      players.findIndex((p) => p.name === player.name)
-                    )
-                  }
+                  onClick={() => movePlayerUp(index)}
                   className="btn btn-info btn-sm"
                   title="Mover para cima"
                   disabled={
-                    index === 0 ||
-                    player.checked !== sortedPlayers[index - 1].checked
+                    index === 0 || player.checked !== players[index - 1].checked
                   }
                 >
                   <FontAwesomeIcon icon={faArrowUp} />
                 </button>
                 <button
-                  onClick={() =>
-                    movePlayerDown(
-                      players.findIndex((p) => p.name === player.name)
-                    )
-                  }
+                  onClick={() => movePlayerDown(index)}
                   className="btn btn-info btn-sm"
                   title="Mover para baixo"
                   disabled={
-                    index === sortedPlayers.length - 1 ||
-                    player.checked !== sortedPlayers[index + 1].checked
+                    index === players.length - 1 ||
+                    player.checked !== players[index + 1]?.checked
                   }
                 >
                   <FontAwesomeIcon icon={faArrowDown} />
                 </button>
                 <button
-                  onClick={() =>
-                    movePlayerToEnd(
-                      players.findIndex((p) => p.name === player.name)
-                    )
-                  }
+                  onClick={() => movePlayerToEnd(index)}
                   className="btn btn-secondary btn-sm"
                   title="Mover para o final do grupo"
                 >
                   <FontAwesomeIcon icon={faSignInAlt} />
                 </button>
                 <button
-                  onClick={() =>
-                    removePlayer(
-                      players.findIndex((p) => p.name === player.name)
-                    )
-                  }
+                  onClick={() => removePlayer(index)}
                   className="btn btn-danger btn-sm"
                   title="Remover jogador"
                 >

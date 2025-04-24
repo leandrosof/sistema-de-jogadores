@@ -55,7 +55,11 @@ export default function Home() {
 
       <div className="container mt-3">
         {activeTab === "players" && (
-          <PlayerList players={players} setPlayers={setPlayers} />
+          <PlayerList
+            players={players}
+            setPlayers={setPlayers}
+            playersPerTeam={playersPerTeam}
+          />
         )}
 
         {activeTab === "teams" && (
